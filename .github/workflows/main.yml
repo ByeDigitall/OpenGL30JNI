@@ -1,0 +1,43 @@
+name: Build APK on Change
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - '**'  # Qualquer arquivo em qualquer pasta
+  pull_request:
+    branches:
+      - main
+      - master
+    paths:
+      - '**'  # Qualquer arquivo em qualquer pasta
+
+jobs:
+  build:
+    name: Build APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'  # Ajuste conforme a versão do seu projeto
+
+      - name: Grant execute permissions for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build APK
+        run: ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+          
